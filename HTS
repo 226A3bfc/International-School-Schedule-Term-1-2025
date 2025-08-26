@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule - Hastin International School</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+        }
+        .schedule-grid {
+            display: grid;
+            gap: 6px;
+        }
+        .schedule-cell {
+            padding: 12px 8px;
+            border-radius: 8px;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 0.9rem;
+            min-height: 65px;
+            font-weight: 600;
+            transition: all 0.2s ease-in-out;
+        }
+        .schedule-cell:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .day-cell {
+            font-weight: 700;
+            color: white;
+            font-size: 1rem;
+        }
+        .time-header {
+            font-weight: 700;
+            background-color: #e2e8f0;
+            color: #4a5568;
+        }
+        .time-header span {
+            font-size: 0.75rem;
+            font-weight: 400;
+        }
+        .nav-button {
+            transition: all 0.2s ease-in-out;
+        }
+        .nav-button.active {
+            background-color: #2563eb;
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 4px 14px 0 rgb(0 118 255 / 39%);
+        }
+        .subject-key {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 10px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800">Hastin International School Schedule</h1>
+            <p class="text-xl text-blue-600 font-semibold mt-2">Term 1, 2025</p>
+        </header>
+
+        <nav id="class-nav" class="flex flex-col items-center gap-3 mb-10">
+            <div id="nav-row-1" class="flex flex-wrap justify-center gap-3"></div>
+            <div id="nav-row-2" class="flex flex-wrap justify-center gap-3"></div>
+        </nav>
+
+        <main id="schedule-container" class="bg-white p-4 md:p-6 rounded-2xl shadow-lg overflow-x-auto">
+            <h2 id="schedule-title" class="text-2xl font-bold text-center mb-6 text-blue-700"></h2>
+            <div id="schedule-grid" class="schedule-grid">
+            </div>
+        </main>
+
+        <section id="subject-key-container" class="mt-8 bg-white p-4 md:p-6 rounded-2xl shadow-lg">
+            <h3 class="text-xl font-bold text-center mb-4 text-blue-700">Subject Key</h3>
+            <div id="subject-key" class="subject-key"></div>
+        </section>
+        
+        <footer class="text-center mt-8 text-gray-500 text-sm">
+            <p>&copy; 2025 Hastin International School. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        const scheduleData = {
+            'Year 1A': {
+                '8:30-9:20': ['THAI', 'ENGLISH', 'ENGLISH', 'SPORTS CLUB', 'GLOBAL SKILLS'],
+                '9:20-10:10': ['ENGLISH', 'THAI', 'THAI', 'ENGLISH', 'ENGLISH'],
+                '10:30-11:20': ['MATHS', 'MATHS', 'MATHS', 'MATHS', 'PROBLEM SOLVING'],
+                '11:20-12:10': ['SCIENCE', 'SCIENCE', 'SCIENCE', 'SCIENCE', 'HISTORY'],
+                '12:50-13:40': ['GEOGRAPHY', 'GEOGRAPHY', 'READING AND PRESENTATION', 'GLOBAL SKILLS', 'THAI'],
+                '13:40-14:30': ['ICT', 'ICT', 'CHINESE', 'MUSIC', 'MUSIC'],
+                '14:30-15:20': ['DATA LITERACY', 'ARTS', 'ARTS', 'THAI', 'WELLBEING'],
+            },
+            'Year 1B': {
+                '8:30-9:20': ['SCIENCE', 'ARTS', 'THAI', 'CHINESE', 'SPORTS CLUB'],
+                '9:20-10:10': ['ICT', 'ICT', 'ARTS', 'THAI', 'THAI'],
+                '10:30-11:20': ['ENGLISH', 'ENGLISH', 'ENGLISH', 'ENGLISH', 'ENGLISH'],
+                '11:20-12:10': ['MATHS', 'MATHS', 'MATHS', 'MUSIC', 'PROBLEM SOLVING'],
+                '12:50-13:40': ['MUSIC', 'SCIENCE', 'SCIENCE', 'SCIENCE', 'HISTORY'],
+                '13:40-14:30': ['GEOGRAPHY', 'GEOGRAPHY', 'READING AND PRESENTATION', 'MATHS', 'WELLBEING'],
+                '14:30-15:20': ['THAI', 'THAI', 'DATA LITERACY', 'GLOBAL SKILLS', 'GLOBAL SKILLS'],
+            },
+            'Year 2A': {
+                '8:30-9:20': ['GLOBAL SKILLS', 'MATHS', 'MATHS', 'MUSIC', 'SPORTS CLUB'],
+                '9:20-10:10': ['MATHS', 'READING AND PRESENTATION', 'CHINESE', 'MATHS', 'PROBLEM SOLVING'],
+                '10:30-11:20': ['THAI', 'THAI', 'THAI', 'THAI', 'THAI'],
+                '11:20-12:10': ['ENGLISH', 'ENGLISH', 'ENGLISH', 'ENGLISH', 'ENGLISH'],
+                '12:50-13:40': ['ICT', 'ICT', 'DATA LITERACY', 'ARTS', 'ARTS'],
+                '13:40-14:30': ['SCIENCE', 'SCIENCE', 'SCIENCE', 'GLOBAL SKILLS', 'HISTORY'],
+                '14:30-15:20': ['GEOGRAPHY', 'GEOGRAPHY', 'MUSIC', 'SCIENCE', 'WELLBEING'],
+            },
+            'Year 2B': {
+                '8:30-9:20': ['CHINESE', 'MUSIC', 'WELLBEING', 'MATHS', 'HISTORY'],
+                '9:20-10:10': ['GEOGRAPHY', 'GEOGRAPHY', 'ICT', 'ICT', 'GLOBAL SKILLS'],
+                '10:30-11:20': ['SCIENCE', 'SCIENCE', 'SCIENCE', 'SCIENCE', 'DATA LITERACY'],
+                '11:20-12:10': ['THAI', 'THAI', 'THAI', 'THAI', 'THAI'],
+                '12:50-13:40': ['ENGLISH', 'ENGLISH', 'ENGLISH', 'ENGLISH', 'ENGLISH'],
+                '13:40-14:30': ['MATHS', 'MATHS', 'ARTS', 'SPORTS CLUB', 'PROBLEM SOLVING'],
+                '14:30-15:20': ['MUSIC', 'GLOBAL SKILLS', 'MATHS', 'ARTS', 'READING AND PRESENTATION'],
+            },
+            'Year 3A': {
+                '8:30-9:20': ['THAI', 'DATA LITERACY', 'THAI', 'THAI', 'THAI'],
+                '9:20-10:10': ['ENGLISH', 'ENGLISH', 'ENGLISH', 'ENGLISH', 'ICT'],
+                '10:30-11:20': ['MUSIC', 'SCIENCE', 'MUSIC', 'SCIENCE', 'SPORTS CLUB'],
+                '11:20-12:10': ['MATHS', 'MATHS', 'MATHS', 'MATHS', 'PROBLEM SOLVING'],
+                '12:50-13:40': ['GLOBAL SKILLS', 'GLOBAL SKILLS', 'GEOGRAPHY', 'GEOGRAPHY', 'CHINESE'],
+                '13:40-14:30': ['SCIENCE', 'ARTS', 'WELLBEING', 'HISTORY', 'READING AND PRESENTATION'],
+                '14:30-15:20': ['ARTS', 'THAI', 'SCIENCE', 'ICT', 'ENGLISH'],
+            },
+            'Year 3B': {
+                '8:30-9:20': ['MATHS', 'THAI', 'MUSIC', 'MATHS', 'PROBLEM SOLVING'],
+                '9:20-10:10': ['HISTORY', 'MATHS', 'MATHS', 'ARTS', 'ARTS'],
+                '10:30-11:20': ['WELLBEING', 'SPORTS CLUB', 'THAI', 'THAI', 'THAI'],
+                '11:20-12:10': ['ENGLISH', 'ENGLISH', 'ENGLISH', 'ENGLISH', 'ENGLISH'],
+                '12:50-13:40': ['SCIENCE', 'CHINESE', 'SCIENCE', 'SCIENCE', 'ICT'],
+                '13:40-14:30': ['DATA LITERACY', 'SCIENCE', 'GLOBAL SKILLS', 'READING AND PRESENTATION', 'GLOBAL SKILLS'],
+                '14:30-15:20': ['THAI', 'MUSIC', 'ICT', 'GEOGRAPHY', 'GEOGRAPHY'],
+            },
+            'Year 4A': {
+                '8:10-9:00': ['GEOGRAPHY', 'ICT', 'SCIENCE', 'SCIENCE', 'GLOBAL SKILLS'],
+                '9:00-9:50': ['PRESENTATION AND WRITING', 'ICT', 'SCIENCE', 'GLOBAL SKILLS', 'GEOGRAPHY'],
+                '10:10-11:00': ['ENGLISH', 'ENGLISH', 'ENGLISH', 'ENGLISH', 'ENGLISH'],
+                '11:00-11:50': ['THAI', 'THAI', 'CHINESE', 'ARTS', 'ARTS'],
+                '12:50-13:40': ['MATHS', 'MATHS', 'MATHS', 'MATHS', 'PROBLEM SOLVING'],
+                '13:40-14:30': ['SPORTS CLUB', 'DATA LITERACY', 'HISTORY', 'THAI', 'THAI'],
+                '14:30-15:20': ['SCIENCE', 'WELLBEING', 'THAI', 'MUSIC', 'MUSIC'],
+            },
+             'Year 5A': {
+                '8:10-9:00': ['MATHS', 'SCIENCE', 'SCIENCE', 'ARTS', 'ARTS'],
+                '9:00-9:50': ['MUSIC', 'SPORTS CLUB', 'HISTORY', 'GLOBAL SKILLS', 'ENGLISH'],
+                '10:10-11:00': ['THAI', 'PROBLEM SOLVING', 'MATHS', 'MATHS', 'MATHS'],
+                '11:00-11:50': ['SCIENCE', 'MUSIC', 'GEOGRAPHY', 'DATA LITERACY', 'GEOGRAPHY'],
+                '12:50-13:40': ['ENGLISH', 'ENGLISH', 'ENGLISH', 'ENGLISH', 'GLOBAL SKILLS'],
+                '13:40-14:30': ['PRESENTATION AND WRITING', 'THAI', 'THAI', 'SCIENCE', 'CHINESE'],
+                '14:30-15:20': ['ICT', 'ICT', 'WELLBEING', 'THAI', 'THAI'],
+            },
+            'Year 6A': {
+                '8:10-9:00': ['ICT', 'THAI', 'GEOGRAPHY', 'GEOGRAPHY', 'GLOBAL SKILLS'],
+                '9:00-9:50': ['ENGLISH', 'ENGLISH', 'ENGLISH', 'HISTORY', 'ENGLISH'],
+                '10:10-11:00': ['SCIENCE', 'SCIENCE', 'SCIENCE', 'SCIENCE', 'ICT'],
+                '11:00-11:50': ['THAI', 'ARTS', 'THAI', 'THAI', 'CHINESE'],
+                '12:50-13:40': ['DATA LITERACY', 'PRESENTATION AND WRITING', 'ARTS', 'MUSIC', 'MUSIC'],
+                '13:40-14:30': ['MATHS', 'MATHS', 'MATHS', 'MATHS', 'PROBLEM SOLVING'],
+                '14:30-15:20': ['GLOBAL SKILLS', 'SPORTS CLUB', 'WELLBEING', 'ENGLISH', 'THAI'],
+            },
+            'Year 7A': {
+                '8:10-9:00': ['SCIENCE', 'WRITING', 'ARTS', 'ICT', 'ICT'],
+                '9:00-9:50': ['ARTS', 'SCIENCE', 'SCIENCE', 'SCIENCE', 'GLOBAL SKILLS'],
+                '10:10-11:00': ['ENGLISH', 'ENGLISH', 'ENGLISH', 'ENGLISH', 'GEOGRAPHY'],
+                '11:00-11:50': ['MATHS', 'MATHS', 'MATHS', 'MATHS', 'MATHS'],
+                '12:50-13:40': ['CHINESE', 'THAI', 'THAI', 'THAI', 'THAI'],
+                '13:40-14:30': ['MUSIC', 'MUSIC', 'DATA LITERACY', 'GEOGRAPHY', 'SPORTS CLUB'],
+                '14:30-15:20': ['THAI', 'GLOBAL SKILLS', 'WELLBEING', 'PRESENTATION', 'PROBLEM SOLVING'],
+            },
+            'Year 8A': {
+                '8:10-9:00': ['SPORTS CLUB', 'GEOGRAPHY', 'DATA LITERACY', 'MUSIC', 'WELLBEING'],
+                '9:00-9:50': ['MATHS', 'MATHS', 'MATHS', 'MATHS', 'MATHS'],
+                '10:10-11:00': ['THAI', 'THAI', 'THAI', 'THAI', 'THAI'],
+                '11:00-11:50': ['ENGLISH', 'ENGLISH', 'ENGLISH', 'ENGLISH', 'MUSIC'],
+                '12:50-13:40': ['SCIENCE', 'SCIENCE', 'SCIENCE', 'CHINESE', 'SCIENCE'],
+                '13:40-14:30': ['ARTS', 'WRITING', 'ICT', 'ICT', 'GEOGRAPHY'],
+                '14:30-15:20': ['PRESENTATION', 'PROBLEM SOLVING', 'GLOBAL SKILLS', 'GLOBAL SKILLS', 'ARTS'],
+            },
+        };
+        
+        const subjectAbbreviations = {
+            'THAI': 'TH', 'ENGLISH': 'EN', 'MATHS': 'MTH', 'SCIENCE': 'SCI',
+            'SPORTS CLUB': 'SPR', 'GLOBAL SKILLS': 'GS', 'PROBLEM SOLVING': 'PS',
+            'HISTORY': 'HIS', 'GEOGRAPHY': 'GEO', 'ICT': 'ICT',
+            'READING AND PRESENTATION': 'R&P', 'CHINESE': 'CN', 'MUSIC': 'MUS',
+            'DATA LITERACY': 'DL', 'ARTS': 'ART', 'WELLBEING': 'WB',
+            'WRITING': 'WRT', 'PRESENTATION': 'PRES'
+        };
+
+        const subjectColors = {
+            'DEFAULT': 'bg-gray-200 text-gray-800', 'HOMEROOM': 'bg-yellow-200 text-yellow-800',
+            'TH': 'bg-red-200 text-red-800', 'EN': 'bg-blue-200 text-blue-800',
+            'MTH': 'bg-green-200 text-green-800', 'SCI': 'bg-indigo-200 text-indigo-800',
+            'HIS': 'bg-yellow-300 text-yellow-900', 'GEO': 'bg-lime-200 text-lime-800',
+            'ICT': 'bg-gray-300 text-gray-900', 'ART': 'bg-pink-200 text-pink-800',
+            'MUS': 'bg-purple-200 text-purple-800', 'SPR': 'bg-orange-200 text-orange-800',
+            'GS': 'bg-teal-200 text-teal-800', 'CN': 'bg-red-300 text-red-900',
+            'WB': 'bg-cyan-200 text-cyan-800', 'PS': 'bg-green-300 text-green-900',
+            'R&P': 'bg-blue-300 text-blue-900', 'DL': 'bg-gray-400 text-gray-900',
+            'WRT': 'bg-indigo-300 text-indigo-900', 'PRES': 'bg-purple-300 text-purple-900',
+            'BREAK': 'bg-gray-100 text-gray-500 font-medium'
+        };
+        
+        const dayColors = {
+            'Monday': 'bg-blue-500', 'Tuesday': 'bg-pink-500', 'Wednesday': 'bg-green-500',
+            'Thursday': 'bg-orange-500', 'Friday': 'bg-teal-500'
+        };
+
+        const navContainer = document.getElementById('class-nav');
+        const navRow1 = document.getElementById('nav-row-1');
+        const navRow2 = document.getElementById('nav-row-2');
+        const scheduleGrid = document.getElementById('schedule-grid');
+        const scheduleTitle = document.getElementById('schedule-title');
+        const subjectKeyContainer = document.getElementById('subject-key');
+        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+
+        function renderSchedule(year) {
+            scheduleTitle.textContent = `Schedule for ${year}`;
+            scheduleGrid.innerHTML = '';
+
+            const data = scheduleData[year];
+            if (!data) return;
+
+            let timeEvents;
+            const yearNum = parseInt(year.replace('Year ', ''));
+
+            if (yearNum <= 3) {
+                timeEvents = [
+                    { type: 'homeroom', time: '8:00-8:30', label: 'Homeroom' },
+                    { type: 'period', time: '8:30-9:20', label: 'Period 1' },
+                    { type: 'period', time: '9:20-10:10', label: 'Period 2' },
+                    { type: 'break', time: '10:10-10:30', label: 'Break' },
+                    { type: 'period', time: '10:30-11:20', label: 'Period 3' },
+                    { type: 'period', time: '11:20-12:10', label: 'Period 4' },
+                    { type: 'lunch', time: '12:10-12:50', label: 'Lunch' },
+                    { type: 'period', time: '12:50-13:40', label: 'Period 5' },
+                    { type: 'period', time: '13:40-14:30', label: 'Period 6' },
+                    { type: 'period', time: '14:30-15:20', label: 'Period 7' },
+                    { type: 'homeroom', time: '15:20-15:40', label: 'Homeroom' },
+                ];
+            } else {
+                timeEvents = [
+                    { type: 'homeroom', time: '8:00-8:10', label: 'Homeroom' },
+                    { type: 'period', time: '8:10-9:00', label: 'Period 1' },
+                    { type: 'period', time: '9:00-9:50', label: 'Period 2' },
+                    { type: 'break', time: '9:50-10:10', label: 'Break' },
+                    { type: 'period', time: '10:10-11:00', label: 'Period 3' },
+                    { type: 'period', time: '11:00-11:50', label: 'Period 4' },
+                    { type: 'lunch', time: '11:50-12:50', label: 'Lunch' },
+                    { type: 'period', time: '12:50-13:40', label: 'Period 5' },
+                    { type: 'period', time: '13:40-14:30', label: 'Period 6' },
+                    { type: 'period', time: '14:30-15:20', label: 'Period 7' },
+                    { type: 'homeroom', time: '15:20-15:40', label: 'Homeroom' },
+                ];
+            }
+
+            scheduleGrid.style.gridTemplateColumns = `auto repeat(${timeEvents.length}, 1fr)`;
+            scheduleGrid.style.gridTemplateRows = `auto repeat(${days.length}, auto)`;
+
+            scheduleGrid.innerHTML += `<div class="schedule-cell time-header">Day</div>`;
+            timeEvents.forEach(event => {
+                scheduleGrid.innerHTML += `<div class="schedule-cell time-header">${event.label}<br><span>${event.time}</span></div>`;
+            });
+
+            days.forEach((day, dayIndex) => {
+                const row = dayIndex + 2;
+                scheduleGrid.innerHTML += `<div class="schedule-cell day-cell ${dayColors[day]}" style="grid-row: ${row}; grid-column: 1;">${day}</div>`;
+                
+                timeEvents.forEach((event, eventIndex) => {
+                    const col = eventIndex + 2;
+                    if (event.type === 'period') {
+                        const subject = data[event.time][dayIndex];
+                        const abbr = subjectAbbreviations[subject] || subject;
+                        const colorClass = subjectColors[abbr] || subjectColors['DEFAULT'];
+                        const cell = document.createElement('div');
+                        cell.className = `schedule-cell ${colorClass}`;
+                        cell.textContent = abbr;
+                        cell.style.gridRow = `${row}`;
+                        cell.style.gridColumn = `${col}`;
+                        scheduleGrid.appendChild(cell);
+                    } else if (dayIndex === 0) { 
+                        const colorClass = event.type === 'homeroom' ? subjectColors['HOMEROOM'] : subjectColors['BREAK'];
+                        const cell = document.createElement('div');
+                        cell.className = `schedule-cell ${colorClass}`;
+                        cell.textContent = event.label;
+                        cell.style.gridRow = `2 / span 5`;
+                        cell.style.gridColumn = `${col}`;
+                        scheduleGrid.appendChild(cell);
+                    }
+                });
+            });
+
+            document.querySelectorAll('.nav-button').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.year === year) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+        
+        function renderSubjectKey() {
+            subjectKeyContainer.innerHTML = '';
+            for (const [fullName, abbr] of Object.entries(subjectAbbreviations)) {
+                const keyItem = document.createElement('div');
+                keyItem.className = 'flex items-center gap-2 p-2 bg-gray-100 rounded';
+                keyItem.innerHTML = `<div class="font-bold text-sm">${abbr}:</div><div class="text-sm">${fullName}</div>`;
+                subjectKeyContainer.appendChild(keyItem);
+            }
+        }
+
+        function createNav() {
+            const years = Object.keys(scheduleData);
+            const yearsRow1 = years.filter(y => {
+                const num = parseInt(y.replace('Year ', ''));
+                return num >= 1 && num <= 3;
+            });
+             const yearsRow2 = years.filter(y => {
+                const num = parseInt(y.replace('Year ', ''));
+                return num >= 4 && num <= 8;
+            });
+
+            const createButtons = (yearList, container) => {
+                yearList.forEach(year => {
+                    const button = document.createElement('button');
+                    button.textContent = year;
+                    button.dataset.year = year;
+                    button.className = 'nav-button px-4 py-2 rounded-lg font-semibold bg-white shadow hover:bg-blue-100';
+                    button.addEventListener('click', () => renderSchedule(year));
+                    container.appendChild(button);
+                });
+            };
+            
+            createButtons(yearsRow1, navRow1);
+            createButtons(yearsRow2, navRow2);
+        }
+
+        createNav();
+        renderSchedule(Object.keys(scheduleData)[0]);
+        renderSubjectKey();
+
+    </script>
+</body>
+</html>
